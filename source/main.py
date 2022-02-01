@@ -6,7 +6,7 @@ from modules.string import Format
 from difflib import SequenceMatcher
 from qt.main_window import Ui_MainWindow
 from modules.site_parser import SiteParser
-from modules.gui_base import Window, QtApplication, QPixmap, Qt
+from modules.gui_base import Window, QtApplication, QPixmap, QPlainTextEdit
 
 
 # Main window class (uses external QtDesigner window)
@@ -17,7 +17,7 @@ class MainWindow(Window):
         self.ui.setupUi(self)  # installing window
         # setting simple CSS
         self.setStyleSheet("*{background: #1e1e1e; color: white; font-size: 12px}"
-                           "QPushButton{background: #0e639c}")
+                           "QPushButton{background: #0e639c; border-radius: 12px}")
 
         # Set clear action when user press clear button
         self.ui.clear_url.clicked.connect(lambda: self.ui.url_entry.clear())
@@ -74,6 +74,12 @@ class Main:
     def __init__(self):
         self.app = QtApplication(on_exit_event=self.__on_exit)
         self.main_window = MainWindow()
+
+        entry_geometry = self.main_window.ui.url_entry.geometry()
+        self.main_window.ui.url_entry = QPlainTextEdit(self.main_window,
+                                                       {"Key_Return": lambda: Thread(target=self.update_stats).start()})
+        self.main_window.ui.url_entry.setGeometry(entry_geometry)
+
         self.main_window.ui.process_url.clicked.connect(lambda: Thread(target=self.update_stats).start())
         self.main_window()
         self.app()

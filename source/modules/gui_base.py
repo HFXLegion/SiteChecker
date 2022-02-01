@@ -13,6 +13,20 @@ class QPixmap(QtGui.QPixmap):
     pass
 
 
+class QPlainTextEdit(QtWidgets.QPlainTextEdit):
+    def __init__(self, parent=None, key_bindings: dict = None):
+        if key_bindings is None:
+            key_bindings = dict()
+        self.key_bindings = key_bindings
+        super().__init__(parent)
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        for key, action in self.key_bindings.items():
+            if event.key() == eval(f"Qt.{key}"):
+                action()
+        return super().keyPressEvent(event)
+
+
 class Window(QtWidgets.QMainWindow):
     def __init__(self, geometry=(160, 160), title="Main Window", parent=None):
         QtWidgets.QWidget.__init__(self, parent)
